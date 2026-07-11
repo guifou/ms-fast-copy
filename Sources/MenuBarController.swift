@@ -1,8 +1,7 @@
 import AppKit
 import ServiceManagement
 
-@MainActor
-final class MenuBarController {
+final class MenuBarController: NSObject {
     private let monitor: ClipboardMonitor
     private var statusItem: NSStatusItem?
     private var launchAtLoginItem: NSMenuItem?
@@ -13,13 +12,17 @@ final class MenuBarController {
 
     func setup() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        item.isVisible = true
+        item.button?.title = " MS "
         item.button?.image = Self.statusImage(enabled: monitor.isEnabled)
         item.button?.imagePosition = .imageLeading
+        item.button?.toolTip = "MS Fast Copy"
         item.menu = buildMenu()
         statusItem = item
     }
 
     func refresh() {
+        statusItem?.button?.title = " MS "
         statusItem?.button?.image = Self.statusImage(enabled: monitor.isEnabled)
         launchAtLoginItem?.state = LaunchAtLogin.isEnabled ? .on : .off
     }
