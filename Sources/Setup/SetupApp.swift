@@ -40,13 +40,16 @@ final class SetupAppDelegate: NSObject, NSApplicationDelegate {
         content.addSubview(title)
 
         let body = NSTextField(wrappingLabelWithString: """
-        首次安装时，macOS 可能提示「无法验证开发者」。
+        macOS 可能提示「无法验证开发者」——这是未公证软件的常见提示，不是病毒。
 
-        1. 点击下方按钮打开「隐私与安全性」
+        若本窗口无法打开：请在 Finder 中右键（或 Control+点击）本 app → 选择「打开」。
+
+        安装步骤：
+        1. 点击下方「打开隐私与安全性设置」
         2. 在页面底部找到 MSFastCopy，点击「仍要打开」
-        3. 再点击「启动 MS Fast Copy」
+        3. 点击「启动 MS Fast Copy」
         """)
-        body.frame = NSRect(x: 32, y: 120, width: width - 64, height: 120)
+        body.frame = NSRect(x: 32, y: 108, width: width - 64, height: 132)
         content.addSubview(body)
 
         statusLabel = NSTextField(wrappingLabelWithString: "准备就绪。")

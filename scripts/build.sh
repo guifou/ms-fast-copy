@@ -58,6 +58,8 @@ echo "→ 签名…"
 sign_app "$APP_DIR"
 sign_app "$SETUP_APP_DIR"
 
+cp "$ROOT/安装说明.txt" "$BUILD_DIR/"
+
 echo ""
 echo "✓ 构建完成:"
 echo "  主程序:   $APP_DIR"
