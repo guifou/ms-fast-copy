@@ -50,24 +50,6 @@ final class MenuBarController {
 
         menu.addItem(.separator())
 
-        let privacyItem = NSMenuItem(
-            title: "打开隐私与安全性设置…",
-            action: #selector(openPrivacySettings),
-            keyEquivalent: ""
-        )
-        privacyItem.target = self
-        menu.addItem(privacyItem)
-
-        let accessibilityItem = NSMenuItem(
-            title: "打开辅助功能设置…",
-            action: #selector(openAccessibilitySettings),
-            keyEquivalent: ""
-        )
-        accessibilityItem.target = self
-        menu.addItem(accessibilityItem)
-
-        menu.addItem(.separator())
-
         let about = NSMenuItem(
             title: "关于 MS Fast Copy",
             action: #selector(showAbout),
@@ -98,14 +80,6 @@ final class MenuBarController {
     @objc private func toggleLaunchAtLogin() {
         LaunchAtLogin.isEnabled.toggle()
         refresh()
-    }
-
-    @objc private func openPrivacySettings() {
-        SystemSettingsOpener.openPrivacyAndSecurity()
-    }
-
-    @objc private func openAccessibilitySettings() {
-        SystemSettingsOpener.openAccessibility()
     }
 
     @objc private func showAbout() {
