@@ -30,6 +30,10 @@ swiftc \
 echo "→ 打包 App Bundle…"
 cp "$ROOT/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
 
+echo "→ 签名 App（adhoc，避免 Gatekeeper 报「已损坏」）…"
+codesign --force --deep --sign - --timestamp=none "$APP_DIR"
+codesign --verify --deep --strict "$APP_DIR"
+
 # 生成简单图标（可选）
 if command -v sips &>/dev/null; then
     ICON_TMP="$BUILD_DIR/icon.png"
