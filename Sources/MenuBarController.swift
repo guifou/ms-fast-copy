@@ -12,18 +12,25 @@ final class MenuBarController: NSObject {
 
     func setup() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        item.autosaveName = "MSFastCopyStatusItem"
         item.isVisible = true
-        item.button?.title = " MS "
-        item.button?.image = Self.statusImage(enabled: monitor.isEnabled)
-        item.button?.imagePosition = .imageLeading
-        item.button?.toolTip = "MS Fast Copy"
+
+        if let button = item.button {
+            button.title = "MS"
+            button.font = NSFont.boldSystemFont(ofSize: 12)
+            button.image = Self.statusImage(enabled: monitor.isEnabled)
+            button.imagePosition = .imageLeft
+            button.toolTip = "MS Fast Copy"
+        }
+
         item.menu = buildMenu()
         statusItem = item
     }
 
     func refresh() {
-        statusItem?.button?.title = " MS "
-        statusItem?.button?.image = Self.statusImage(enabled: monitor.isEnabled)
+        guard let button = statusItem?.button else { return }
+        button.title = "MS"
+        button.image = Self.statusImage(enabled: monitor.isEnabled)
         launchAtLoginItem?.state = LaunchAtLogin.isEnabled ? .on : .off
     }
 
@@ -93,36 +100,14 @@ final class MenuBarController: NSObject {
         NSApp.terminate(nil)
     }
 
-    private static func statusImage(enabled: Bool) -> NSImage {
-        let size = NSSize(width: 18, height: 18)
-        let image = NSImage(size: size, flipped: false) { rect in
-            let clip = NSBezierPath(roundedRect: rect.insetBy(dx: 2, dy: 3), xRadius: 2, yRadius: 2)
-            (enabled ? NSColor.labelColor : NSColor.tertiaryLabelColor).setStroke()
-            clip.lineWidth = 1.4
-            clip.stroke()
-
-            let text = NSBezierPath()
-            text.move(to: NSPoint(x: 5, y: 10))
-            text.line(to: NSPoint(x: 13, y: 10))
-            text.move(to: NSPoint(x: 5, y: 7))
-            text.line(to: NSPoint(x: 11, y: 7))
-            text.lineWidth = 1.2
-            text.stroke()
-
-            if enabled {
-                let check = NSBezierPath()
-                check.move(to: NSPoint(x: 12, y: 4))
-                check.line(to: NSPoint(x: 14, y: 2))
-                check.line(to: NSPoint(x: 16, y: 6))
-                NSColor.systemGreen.setStroke()
-                check.lineWidth = 1.3
-                check.stroke()
-            }
-
-            return true
+    private static func statusImage(enabled: Bool) -> NSImage? {
+        if let symbol = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "MS Fast Copy") {
+            let config = NSImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+            let image = symbol.withSymbolConfiguration(config) ?? symbol
+            image.isTemplate = true
+            return image
         }
-        image.isTemplate = true
-        return image
+        return nil
     }
 }
 

@@ -7,7 +7,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var menuBar: MenuBarController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
+        guard AppEnvironment.acquireSingleInstance() else {
+            NSApp.terminate(nil)
+            return
+        }
+
+        // 显示 Dock 图标，避免刘海屏菜单栏找不到入口
+        NSApp.setActivationPolicy(.regular)
+
+        if AppEnvironment.isTranslocated {
+            AppEnvironment.showTranslocationAlert()
+        }
 
         monitor.loadSettings()
         monitor.start()
@@ -15,7 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuBar = MenuBarController(monitor: monitor)
         menuBar?.setup()
 
-        NSApp.activate(ignoringOtherApps: true)
+        AppEnvironment.showStartupHintIfNeeded()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
