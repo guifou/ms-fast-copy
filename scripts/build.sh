@@ -23,6 +23,7 @@ swiftc \
     -target "${ARCH}-apple-macos13.0" \
     -parse-as-library \
     -framework AppKit \
+    -framework ApplicationServices \
     -framework ServiceManagement \
     -o "$MACOS_DIR/$APP_NAME" \
     "$ROOT/Sources/"*.swift
@@ -33,6 +34,13 @@ cp "$ROOT/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
 echo "→ 签名 App（adhoc，避免 Gatekeeper 报「已损坏」）…"
 codesign --force --deep --sign - --timestamp=none "$APP_DIR"
 codesign --verify --deep --strict "$APP_DIR"
+
+# 复制首次安装脚本到 build 目录（随 Release 一起分发）
+INSTALLER="$ROOT/scripts/打开并授权 MSFastCopy.command"
+if [[ -f "$INSTALLER" ]]; then
+    cp "$INSTALLER" "$BUILD_DIR/"
+    chmod +x "$BUILD_DIR/打开并授权 MSFastCopy.command"
+fi
 
 # 生成简单图标（可选）
 if command -v sips &>/dev/null; then

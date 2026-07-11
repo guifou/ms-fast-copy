@@ -6,17 +6,11 @@
 
 1. 打开 [Releases](https://github.com/guifou/ms-fast-copy/releases) 页面
 2. 下载 `MSFastCopy.zip`
-3. 解压后将 `MSFastCopy.app` 拖到「应用程序」文件夹
-4. 双击打开（首次可能需在「系统设置 → 隐私与安全性」中允许运行）
-5. 菜单栏出现图标即表示已运行；从 Word / PPT 复制文字后，在 Cursor 里 `⌘V` 即可
+3. 解压后 **先双击 `打开并授权 MSFastCopy.command`**（会自动打开「隐私与安全性」并尝试启动 app）
+4. 在「系统设置 → 隐私与安全性」底部找到 MSFastCopy，点击 **「仍要打开」**
+5. 也可将 `MSFastCopy.app` 拖到「应用程序」后，从菜单栏使用
 
-> **若提示「应用程序已损坏」**：这是 macOS 对未公证下载文件的常见拦截，并非真的损坏。在终端执行：
->
-> ```bash
-> xattr -cr /Applications/MSFastCopy.app
-> ```
->
-> 然后重新打开即可。或在「系统设置 → 隐私与安全性」中点击「仍要打开」。
+> **若提示「Apple 无法验证…」或「应用程序已损坏」**：不要直接双击 app，请先运行上面的 `.command` 脚本；或在终端执行 `xattr -cr /Applications/MSFastCopy.app` 后，在菜单栏 app 里点「打开隐私与安全性设置…」。
 
 > 首次运行建议授予 **辅助功能** 权限（系统设置 → 隐私与安全性 → 辅助功能），以便准确识别 `⌘C` 复制来源。未授权时仍可通过低频兜底模式工作。
 

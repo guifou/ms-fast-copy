@@ -11,6 +11,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menuBar = MenuBarController(monitor: monitor)
         menuBar?.setup()
+
+        SystemSettingsOpener.promptAccessibilityIfNeeded()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
