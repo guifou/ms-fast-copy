@@ -25,6 +25,7 @@ swiftc \
     -target "$TARGET" \
     -parse-as-library \
     -framework AppKit \
+    -framework SwiftUI \
     -framework ServiceManagement \
     -o "$MACOS_DIR/$APP_NAME" \
     "$ROOT/Sources/"*.swift

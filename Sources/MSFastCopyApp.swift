@@ -1,6 +1,17 @@
 import AppKit
+import SwiftUI
 
 @main
+struct MSFastCopyApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    var body: some Scene {
+        Settings {
+            EmptyView()
+        }
+    }
+}
+
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let monitor = ClipboardMonitor()
@@ -12,9 +23,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        // 显示 Dock 图标，避免刘海屏菜单栏找不到入口
-        NSApp.setActivationPolicy(.regular)
-
         if AppEnvironment.isTranslocated {
             AppEnvironment.showTranslocationAlert()
         }
@@ -24,8 +32,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menuBar = MenuBarController(monitor: monitor)
         menuBar?.setup()
-
-        AppEnvironment.showStartupHintIfNeeded()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
