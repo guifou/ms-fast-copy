@@ -3,73 +3,64 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP_NAME="MSFastCopy"
+SETUP_APP_NAME="MS Fast Copy 安装助手"
 BUILD_DIR="$ROOT/build"
 APP_DIR="$BUILD_DIR/$APP_NAME.app"
+SETUP_APP_DIR="$BUILD_DIR/$SETUP_APP_NAME.app"
 MACOS_DIR="$APP_DIR/Contents/MacOS"
+SETUP_MACOS_DIR="$SETUP_APP_DIR/Contents/MacOS"
 RESOURCES_DIR="$APP_DIR/Contents/Resources"
 
-echo "→ 清理旧构建…"
-rm -rf "$APP_DIR"
-mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
-
-echo "→ 编译 Swift…"
 SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
 ARCH="$(uname -m)"
+TARGET="${ARCH}-apple-macos13.0"
+SWIFT_FLAGS=(
+    -O
+    -whole-module-optimization
+    -sdk "$SDK_PATH"
+    -target "$TARGET"
+    -parse-as-library
+    -framework AppKit
+)
 
-swiftc \
-    -O \
-    -whole-module-optimization \
-    -sdk "$SDK_PATH" \
-    -target "${ARCH}-apple-macos13.0" \
-    -parse-as-library \
-    -framework AppKit \
+sign_app() {
+    local app_path="$1"
+    codesign --force --deep --sign - --timestamp=none "$app_path"
+    codesign --verify --deep --strict "$app_path"
+}
+
+echo "→ 清理旧构建…"
+rm -rf "$APP_DIR" "$SETUP_APP_DIR"
+mkdir -p "$MACOS_DIR" "$SETUP_MACOS_DIR" "$RESOURCES_DIR"
+
+echo "→ 编译主程序…"
+swiftc "${SWIFT_FLAGS[@]}" \
     -framework ApplicationServices \
     -framework ServiceManagement \
     -o "$MACOS_DIR/$APP_NAME" \
-    "$ROOT/Sources/"*.swift
+    "$ROOT/Sources/MSFastCopyApp.swift" \
+    "$ROOT/Sources/ClipboardMonitor.swift" \
+    "$ROOT/Sources/ClipboardSanitizer.swift" \
+    "$ROOT/Sources/MenuBarController.swift" \
+    "$ROOT/Sources/SystemSettingsOpener.swift"
+
+echo "→ 编译安装助手…"
+swiftc "${SWIFT_FLAGS[@]}" \
+    -o "$SETUP_MACOS_DIR/MSFastCopySetup" \
+    "$ROOT/Sources/Setup/SetupApp.swift" \
+    "$ROOT/Sources/SystemSettingsOpener.swift"
 
 echo "→ 打包 App Bundle…"
 cp "$ROOT/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
+cp "$ROOT/Resources/SetupInfo.plist" "$SETUP_APP_DIR/Contents/Info.plist"
 
-echo "→ 签名 App（adhoc，避免 Gatekeeper 报「已损坏」）…"
-codesign --force --deep --sign - --timestamp=none "$APP_DIR"
-codesign --verify --deep --strict "$APP_DIR"
-
-# 复制首次安装脚本到 build 目录（随 Release 一起分发）
-INSTALLER="$ROOT/scripts/打开并授权 MSFastCopy.command"
-if [[ -f "$INSTALLER" ]]; then
-    cp "$INSTALLER" "$BUILD_DIR/"
-    chmod +x "$BUILD_DIR/打开并授权 MSFastCopy.command"
-fi
-
-# 生成简单图标（可选）
-if command -v sips &>/dev/null; then
-    ICON_TMP="$BUILD_DIR/icon.png"
-    python3 - <<'PY' "$ICON_TMP" 2>/dev/null || true
-import sys
-from pathlib import Path
-try:
-    from PIL import Image, ImageDraw
-    img = Image.new("RGBA", (512, 512), (30, 120, 220, 255))
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle((96, 120, 416, 392), radius=40, fill=(255, 255, 255, 255))
-    d.rectangle((140, 180, 372, 210), fill=(30, 120, 220, 255))
-    d.rectangle((140, 240, 320, 270), fill=(30, 120, 220, 200))
-    img.save(sys.argv[1])
-except Exception:
-    pass
-PY
-    if [[ -f "$ICON_TMP" ]]; then
-        mkdir -p "$RESOURCES_DIR/AppIcon.iconset"
-        for size in 16 32 128 256 512; do
-            sips -z $size $size "$ICON_TMP" --out "$RESOURCES_DIR/AppIcon.iconset/icon_${size}x${size}.png" &>/dev/null || true
-            double=$((size * 2))
-            sips -z $double $double "$ICON_TMP" --out "$RESOURCES_DIR/AppIcon.iconset/icon_${size}x${size}@2x.png" &>/dev/null || true
-        done
-        iconutil -c icns "$RESOURCES_DIR/AppIcon.iconset" -o "$RESOURCES_DIR/AppIcon.icns" 2>/dev/null || true
-    fi
-fi
+echo "→ 签名…"
+sign_app "$APP_DIR"
+sign_app "$SETUP_APP_DIR"
 
 echo ""
-echo "✓ 构建完成: $APP_DIR"
-echo "  运行: open \"$APP_DIR\""
+echo "✓ 构建完成:"
+echo "  主程序:   $APP_DIR"
+echo "  安装助手: $SETUP_APP_DIR"
+echo ""
+echo "  首次安装请打开: open \"$SETUP_APP_DIR\""

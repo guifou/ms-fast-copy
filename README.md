@@ -5,12 +5,13 @@
 ## 快速安装（推荐给普通用户）
 
 1. 打开 [Releases](https://github.com/guifou/ms-fast-copy/releases) 页面
-2. 下载 `MSFastCopy.zip`
-3. 解压后 **先双击 `打开并授权 MSFastCopy.command`**（会自动打开「隐私与安全性」并尝试启动 app）
-4. 在「系统设置 → 隐私与安全性」底部找到 MSFastCopy，点击 **「仍要打开」**
-5. 也可将 `MSFastCopy.app` 拖到「应用程序」后，从菜单栏使用
+2. 下载 `MSFastCopy.zip` 并解压
+3. **双击 `MS Fast Copy 安装助手.app`**
+4. 点击 **「打开隐私与安全性设置」**，在页面底部找到 MSFastCopy，点击 **「仍要打开」**
+5. 回到安装助手，点击 **「启动 MS Fast Copy」**
+6. 可将 `MSFastCopy.app` 拖到「应用程序」文件夹长期使用
 
-> **若提示「Apple 无法验证…」或「应用程序已损坏」**：不要直接双击 app，请先运行上面的 `.command` 脚本；或在终端执行 `xattr -cr /Applications/MSFastCopy.app` 后，在菜单栏 app 里点「打开隐私与安全性设置…」。
+> 安装助手是一个带按钮的小窗口，用来引导完成 macOS 安全授权。日常使用时只需 `MSFastCopy.app`，无需再打开安装助手。
 
 > 首次运行建议授予 **辅助功能** 权限（系统设置 → 隐私与安全性 → 辅助功能），以便准确识别 `⌘C` 复制来源。未授权时仍可通过低频兜底模式工作。
 
